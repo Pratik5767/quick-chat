@@ -24,7 +24,7 @@ const RightSidebar = ({ selectedUser }) => {
                     {
                         imagesDummyData.map((url, index) => (
                             <div className='cursor-pointer rounded' key={index} onClick={() => window.open(url)}>
-                                <img className='h-full rounded-md' src={url} alt='' />
+                                <img className='h-full rounded-md' src={url} alt=''/>
                             </div>
                         ))
                     }

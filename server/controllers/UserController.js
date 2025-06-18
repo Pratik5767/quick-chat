@@ -1,12 +1,14 @@
+import cloudinary from "../lib/cloudinary.js";
 import { generateToken } from "../lib/utils.js";
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 
 // SignUp a User
 export const signup = async (req, res) => {
-    const { fullName, email, password, bio } = req.body;
 
     try {
+        const { fullName, email, password, bio } = req.body;
+
         if (!fullName || !email || !password || !bio) {
             return res.json({
                 success: false,
@@ -39,6 +41,80 @@ export const signup = async (req, res) => {
             userData: newUser,
             token,
             message: "Account created successfully"
+        })
+    } catch (error) {
+        console.log(error.message);
+        return res.json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+// Login a User
+export const login = async (req, res) => {
+
+    try {
+        const { email, password } = req.body;
+        const userData = await User.findOne({ email });
+
+        const isPasswordCorrect = await bcrypt.compare(password, userData.password);
+        if (!isPasswordCorrect) {
+            res.json({
+                success: false,
+                message: "Invalid Credentials"
+            })
+        }
+
+        const token = generateToken(userData._id);
+
+        return res.json({
+            success: true,
+            userData,
+            token,
+            message: "Login Successfull"
+        })
+    } catch (error) {
+        console.log(error.message);
+        return res.json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+// Controller to check if user is Authenticated
+export const checkAuth = (req, res) => {
+    res.json({
+        success: true,
+        user: req.user
+    });
+}
+
+// Controller  to update user profile details
+export const updateProfile = async (req, res) => {
+
+    try {
+        const { profilePic, bio, fullName } = req.body;
+
+        const userId = req.user._id;
+
+        let updateUser;
+        if (!profilePic) {
+            updateUser = await User.findByIdAndUpdate(userId, { bio, fullName }, { new: true });
+        } else {
+            const upload = await cloudinary.uploader.upload(profilePic);
+            updateUser = await User.findByIdAndUpdate(
+                userId, {
+                profilePic: upload.secure_url,
+                bio,
+                fullName
+            }, { new: true });
+        }
+
+        return res.json({
+            success: true,
+            user: updateUser
         })
     } catch (error) {
         console.log(error.message);

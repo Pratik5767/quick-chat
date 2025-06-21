@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import assets from '../assets/assets'
+import { AuthContext } from '../../context/AuthContext';
 
 const LoginPage = () => {
 
@@ -10,12 +11,16 @@ const LoginPage = () => {
     const [bio, setBio] = useState("");
     const [isDataSubmitted, setIsDataSubmitted] = useState(false);
 
+    const { login } = useContext(AuthContext);
+
     const onSubmitHandler = (e) => {
         e.preventDefault();
         if (currentState === "Sign up" && !isDataSubmitted) {
             setIsDataSubmitted(true);
             return;
         }
+
+        login(currentState === "Sign up" ? 'signup' : 'login', { fullName, email, password, bio });
     }
 
     return (
@@ -93,10 +98,10 @@ const LoginPage = () => {
                     {
                         currentState === "Sign up" ? (
                             <p className='text-sm text-gray-600'>
-                                Already have an account? <span onClick={() => {setCurrentState("Login"); setIsDataSubmitted(false)}} className='font-medium text-violet-500 cursor-pointer'>Login here</span>
+                                Already have an account? <span onClick={() => { setCurrentState("Login"); setIsDataSubmitted(false) }} className='font-medium text-violet-500 cursor-pointer'>Login here</span>
                             </p>
                         ) : (
-                            <p className='text-sm text-gray-600'>Create an account <span onClick={() => {setCurrentState("Sign up")}} className='font-medium text-violet-500 cursor-pointer'>Click here</span></p>
+                            <p className='text-sm text-gray-600'>Create an account <span onClick={() => { setCurrentState("Sign up") }} className='font-medium text-violet-500 cursor-pointer'>Click here</span></p>
                         )
                     }
                 </div>

@@ -3,9 +3,9 @@ import "dotenv/config"
 import cors from "cors"
 import http from "http"
 import { connectDB } from "./lib/db.js";
-import userRouter from "./routes/UserRoutes.js";
 import messageRoutes from "./routes/MessageRoutes.js";
 import { Server } from "socket.io"
+import userRoutes from "./routes/UserRoutes.js";
 
 // create express app using http server
 const app = express();
@@ -41,7 +41,7 @@ app.use(cors());
 
 // Routes setup
 app.use("/api/status", (req, res) => res.send("Server is live"));
-app.use("/api/auth", userRouter);
+app.use("/api/auth", userRoutes);
 app.use("/api/messages", messageRoutes);
 
 // connecting to mongodb

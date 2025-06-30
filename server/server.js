@@ -47,7 +47,12 @@ app.use("/api/messages", messageRoutes);
 // connecting to mongodb
 await connectDB();
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Server is running at port no ${PORT}`)
-})
+if (process.env.NODE_ENV !== "production") {
+    const PORT = process.env.PORT || 3000;
+    server.listen(PORT, () => {
+        console.log(`Server is running at port no ${PORT}`)
+    })
+}
+
+// export server for versel
+export default server;

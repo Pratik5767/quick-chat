@@ -10,12 +10,30 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const { logOut, onlineUsers } = useContext(AuthContext);
     const [input, setInput] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
     const filteredUsers = input ?
         users.filter((user) => user.fullName.toLowerCase().includes(input.toLowerCase())) : users;
 
     useEffect(() => {
         getUsers();
     }, [onlineUsers])
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 770);
+        };
+        handleResize();
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    const toggleMenu = () => {
+        if (isMobile) {
+            setShowMenu(!showMenu);
+        }
+    }
 
     return (
         <div className={`bg-[#8185B2]/10 h-full p-5 rounded-r-xl overflow-y-scroll text-white ${selectedUser ? 'max-md:hidden' : ''}`}>
@@ -24,9 +42,11 @@ const Sidebar = () => {
                     <img className='max-w-40' src={assets.logo} alt='logo' />
 
                     <div className='relative py-2 group'>
-                        <img className='max-h-5 cursor-pointer' src={assets.menu_icon} alt='menu' />
+                        <div onClick={toggleMenu}>
+                            <img className='max-h-5 cursor-pointer' src={assets.menu_icon} alt='menu' />
+                        </div>
 
-                        <div className='absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 hidden group-hover:block'>
+                        <div className={`absolute top-full right-0 z-20 w-32 p-5 rounded-md bg-[#282142] border border-gray-600 text-gray-100 ${isMobile ? (showMenu ? 'block' : 'hidden') : 'hidden group-hover:block'}`}>
                             <p onClick={() => navigate('/profile')} className='cursor-pointer text-sm'>
                                 Edit Profile
                             </p>
